@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx">
+  <fx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import mx.rpc.events.ResultEvent;
+      [Bindable]
+      private var myData:ArrayCollection;
+      [Bindable]
+      private var elapsedTime:Number;
+      private var startTime:Number;
+      private function sendRequest():void
+      {
+        startTime = (new Date()).getTime();
+        dataResponder.token = dataService.getData();
+      }
+      protected function dataResponder_resultHandler(event:ResultEvent):void
+      {
+        var endTime:Number = (new Date()).getTime();
+        elapsedTime = endTime - startTime;
+        myData = event.result as ArrayCollection;
+      }
+    ]]>
+  </fx:Script>
+  <fx:Declarations>
+    <s:RemoteObject id="dataService"  endpoint="gateway.php" 
+      source="DataManager" destination="DataManager"/>
+    <s:CallResponder id="dataResponder" result="dataResponder_resultHandler(event)"/>
+  </fx:Declarations>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" horizontalAlign="center"/>
+  </s:layout>
+  <s:Button label="Get Data" click="sendRequest()"/>
+  <mx:DataGrid dataProvider="{dataService.getData.lastResult}"/>
+  <s:Label text="Time elapsed: {elapsedTime}ms" visible="{!isNaN(elapsedTime)}"/>
+</s:Application>

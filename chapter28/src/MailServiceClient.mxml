@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx" 
+  xmlns:cf="coldfusion.service.mxml.*">
+  <fx:Declarations>
+    <cf:Mail id="cfMail"
+      cfServer="localhost" cfPort="8500"
+      serviceUserName="david" 
+      servicePassword="password"
+      type="html"
+      from="david@bardotech.com" 
+      to="{toInput.text}"
+      subject="{subjectInput.text}"
+      content="{contentInput.htmlText}"
+      result="cfMail_resultHandler(event)"
+      fault="cfMail_faultHandler(event)">
+    </cf:Mail>
+  </fx:Declarations>
+  <fx:Script>
+    <![CDATA[
+      import coldfusion.service.events.ColdFusionServiceFaultEvent;
+      import coldfusion.service.events.ColdFusionServiceResultEvent;
+      
+      import mx.controls.Alert;
+      
+      protected function cfMail_resultHandler(event:ColdFusionServiceResultEvent):void
+      {
+        toInput.text="";
+        subjectInput.text="";
+        contentInput.text="";
+        Alert.show("Your message was sent", "ColdFusion Mail");
+      }
+      protected function cfMail_faultHandler(event:ColdFusionServiceFaultEvent):void
+      {
+        Alert.show(event.fault.faultString, event.fault.faultCode);
+      }
+    ]]>
+  </fx:Script>
+  <s:Panel title="Send an Email" horizontalCenter="0" top="20">
+    <mx:Form>
+      <mx:FormItem label="To:">
+        <s:TextInput id="toInput" width="300"/>
+      </mx:FormItem>
+      <mx:FormItem label="Subject">
+        <s:TextInput id="subjectInput" width="300"/>
+      </mx:FormItem>
+      <mx:FormItem label="Content">
+        <mx:RichTextEditor id="contentInput" 
+          title="Enter Content" 
+          width="300" height="300"/>
+      </mx:FormItem>
+    </mx:Form>
+    <s:controlBarContent>
+      <s:Button label="Send Mail" click="cfMail.execute()"/>
+    </s:controlBarContent>
+  </s:Panel>
+</s:Application>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx">
+  <fx:Declarations>
+    <fx:Date id="currentDate"/>
+    <mx:DateFormatter id="df"/>
+    <s:ArrayList id="locales">
+      <fx:String>en_US</fx:String>
+      <fx:String>fr_FR</fx:String>
+    </s:ArrayList>
+  </fx:Declarations>
+  <fx:Style>
+    @namespace s "library://ns.adobe.com/flex/spark";
+    s|Label { font-size:18; }
+  </fx:Style>
+  <fx:Metadata>
+    [ResourceBundle("customStrings")]
+  </fx:Metadata>
+  <fx:Script>
+    <![CDATA[
+      import spark.events.IndexChangeEvent;
+      
+      protected function dropdownlist1_changeHandler(event:IndexChangeEvent):void
+      {
+        resourceManager.localeChain = [ locales.getItemAt(event.newIndex) ];
+        dateLabel.executeBindings();
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="center" paddingTop="20"/>
+  </s:layout>
+  <s:DropDownList dataProvider="{locales}" 
+    change="dropdownlist1_changeHandler(event)"
+    selectedIndex="0"/>
+  <s:Label id="dateLabel" 
+    text="{resourceManager.getString('customStrings','todayItIs')} {df.format(currentDate)}"/>
+  <s:Label text="{resourceManager.getString('customStrings','helloWorld')}"/>
+  <s:BitmapImage source="{resourceManager.getClass('customStrings','helloFlag')}"/>
+</s:Application>

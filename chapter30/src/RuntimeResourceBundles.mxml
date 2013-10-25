@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="app_creationCompleteHandler(event)">
+  <fx:Declarations>
+    <fx:Date id="currentDate"/>
+    <mx:DateFormatter id="df"/>
+    <s:ArrayList id="locales">
+      <fx:String>en_US</fx:String>
+      <fx:String>fr_FR</fx:String>
+    </s:ArrayList>
+  </fx:Declarations>
+ <fx:Style>
+   @namespace s "library://ns.adobe.com/flex/spark";
+   s|Label { font-size:18; }
+ </fx:Style>
+  <fx:Script>
+    <![CDATA[
+      import mx.events.FlexEvent;
+      import mx.resources.ResourceBundle;
+      
+      import spark.events.IndexChangeEvent;
+      
+      protected function dropdownlist1_changeHandler(event:IndexChangeEvent):void
+      {
+        resourceManager.localeChain = [ locales.getItemAt(event.newIndex) ];
+        dateLabel.executeBindings();
+      }
+
+      protected function app_creationCompleteHandler(event:FlexEvent):void
+      {
+        var enBundle:ResourceBundle = new ResourceBundle("en_US", "customStrings");
+        enBundle.content.helloWorld = "Hello World";
+        enBundle.content.todayItIs = "Today it's";
+        resourceManager.addResourceBundle(enBundle);
+        var frBundle:ResourceBundle = new ResourceBundle("fr_FR", "customStrings");
+        frBundle.content.helloWorld = "Bonjour tout le Monde";
+        frBundle.content.todayItIs = "Aujourd'hui, il est";
+        resourceManager.addResourceBundle(frBundle);
+        resourceManager.update();
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="center" paddingTop="20"/>
+  </s:layout>
+  <s:DropDownList dataProvider="{locales}" 
+    change="dropdownlist1_changeHandler(event)"
+    selectedIndex="0"/>
+  <s:Label id="dateLabel" 
+    text="{resourceManager.getString('customStrings','todayItIs')} {df.format(currentDate)}"/>
+  <s:Label id="helloLabel"
+    text="{resourceManager.getString('customStrings','helloWorld')}"/>
+</s:Application>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="contactService.getContactCount()">
+  <fx:Declarations>
+    <s:RemoteObject id="contactService"
+      destination="ColdFusion"
+      source="flex4bible.chapter28.ContactService">
+      <s:method name="getContactCount" result="countHandler(event)"/>
+      <s:method name="getAllContacts" result="dataHandler(event)"/>
+    </s:RemoteObject>
+  </fx:Declarations>
+  <fx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import mx.rpc.events.ResultEvent;
+      [Bindable]
+      private var recordCount:Number;
+      [Bindable]
+      private var contactData:ArrayCollection;
+      private function countHandler(event:ResultEvent):void
+      {
+        recordCount = event.result as Number;
+      }
+      private function dataHandler(event:ResultEvent):void
+      {
+        contactData = event.result as ArrayCollection;
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" horizontalAlign="center"/>
+  </s:layout>    
+  <s:Label text="There are {recordCount} Contacts"/>
+  <s:Button label="Get Contact Data" 
+    click="contactService.getAllContacts()"/>
+  <mx:DataGrid dataProvider="{contactData}"/>
+</s:Application>

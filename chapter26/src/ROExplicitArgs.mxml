@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx">
+  <fx:Declarations>
+    <s:RemoteObject id="roHello" destination="helloService"/>
+  </fx:Declarations>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="center" paddingTop="20"/>
+  </s:layout>
+  <mx:Form>
+    <mx:FormItem label="First Name:">
+      <mx:TextInput id="fnameInput"/>
+    </mx:FormItem>
+    <mx:FormItem label="Last Name:">
+      <mx:TextInput id="lnameInput"/>
+      <mx:Button label="Send Args" 
+        click="roHello.concatValues(fnameInput.text, lnameInput.text)"/>
+    </mx:FormItem>
+  </mx:Form>
+  <s:Label text="{roHello.concatValues.lastResult}"
+    fontSize="14" fontWeight="bold"/>
+</s:Application>

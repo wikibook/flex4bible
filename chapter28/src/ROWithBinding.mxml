@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx">
+  <fx:Declarations>
+    <s:RemoteObject id="helloService"
+      destination="ColdFusion"
+      source="flex4bible.chapter28.HelloService"/>
+  </fx:Declarations>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" horizontalAlign="center"/>
+  </s:layout>    
+  <s:Button label="Hello World" click="helloService.helloWorld()"/>
+  <s:Label text="{helloService.helloWorld.lastResult}"/>
+</s:Application>

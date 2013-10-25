@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx">
+  <fx:Declarations>
+    <s:RemoteObject id="roHello" destination="helloService"/>
+    <s:CallResponder id="getResponder" result="getHandler(event)"
+      fault="faultHandler(event)"/>
+    <s:CallResponder id="setResponder" result="setHandler(event)"
+      fault="faultHandler(event)"/>
+  </fx:Declarations>
+  <fx:Script>
+    <![CDATA[
+      import mx.rpc.events.FaultEvent;
+      import mx.controls.Alert;
+      import mx.rpc.events.ResultEvent;
+      
+      import valueObjects.ContactVO;
+      
+      [Bindable]
+      private var myContact:ContactVO;
+      
+      private function setContact():void
+      {
+        myContact = new ContactVO();
+        myContact.firstName = fnameInput.text;
+        myContact.lastName = lnameInput.text;
+        setResponder.token = roHello.setContact(myContact);
+      }
+      private function getContact():void
+      {
+        getResponder.token = roHello.getContact(fnameInput.text, lnameInput.text);
+      }
+      private function setHandler(event:ResultEvent):void
+      {
+        Alert.show(event.result as String, "Received String");
+      }
+      private function getHandler(event:ResultEvent):void
+      {
+        myContact = event.result as ContactVO;
+        Alert.show("Contact VO received from server: " +
+          myContact.firstName + " " + myContact.lastName,
+          "Received Contact value object");
+      }
+      private function faultHandler(event:FaultEvent):void
+      {
+        Alert.show(event.fault.faultString, event.fault.faultCode);
+      }
+
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="center" paddingTop="20"/>
+  </s:layout>
+  <s:Panel title="Set or Get Contact">
+    <mx:Form>
+      <mx:FormItem label="First Name:">
+        <s:TextInput id="fnameInput"/>
+      </mx:FormItem>
+      <mx:FormItem label="Last Name:">
+        <s:TextInput id="lnameInput"/>
+      </mx:FormItem>
+    </mx:Form>
+    <s:controlBarContent>
+      <s:Button label="Send Object" click="setContact()"/>
+      <s:Button label="Receive Object" click="getContact()"/>  
+    </s:controlBarContent>
+  </s:Panel>
+</s:Application>

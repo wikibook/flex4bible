@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="myConsumer.subscribe()">
+  <fx:Declarations>
+    <s:Producer id="myProducer" destination="chat"
+      acknowledge="myProducer_acknowledgeHandler(event)"/>
+    <s:Consumer id="myConsumer" destination="chat" 
+      message="messageHandler(event)"/>
+  </fx:Declarations>
+  <fx:Script>
+    <![CDATA[
+      import mx.messaging.events.MessageAckEvent;
+      import mx.controls.Alert;
+      import mx.messaging.events.MessageEvent;
+      import mx.messaging.messages.AsyncMessage;
+      private function sendMessage():void  
+      {
+        if (msgInput.text.length == 0 || userInput.text.length == 0)
+        {
+          Alert.show("Enter user name and message");
+          return;
+        }
+        sendButton.enabled = false;
+        var message:AsyncMessage = new AsyncMessage();
+        message.body = msgInput.text;
+        message.headers.chatUser = userInput.text;
+        myProducer.send(message);
+        msgInput.text="";
+        msgInput.setFocus();    
+      }
+      private function messageHandler(event:MessageEvent):void
+      {
+        msgLog.text += event.message.headers.chatUser + ": " +
+          event.message.body + "\n";
+      }
+      protected function myProducer_acknowledgeHandler(event:MessageAckEvent):void
+      {
+        sendButton.enabled = true;
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" horizontalAlign="center"/>
+  </s:layout>
+  <s:Panel title="Simple Chat" id="sendPanel">
+    <mx:Form width="100%">
+      <mx:FormItem label="User Name:">
+        <s:TextInput id="userInput"/>
+      </mx:FormItem>
+      <mx:FormItem label="Message:">
+        <s:TextInput id="msgInput" enter="sendMessage()"/>
+      </mx:FormItem>
+      <mx:FormItem>
+        <s:Button id="sendButton" label="Send Message" 
+          click="sendMessage()"/>
+      </mx:FormItem>
+    </mx:Form>
+  </s:Panel>
+  <s:Panel title="Message Log" width="{sendPanel.width}">
+    <mx:TextArea id="msgLog" editable="false" height="200" width="100%"/>
+  </s:Panel>
+</s:Application>

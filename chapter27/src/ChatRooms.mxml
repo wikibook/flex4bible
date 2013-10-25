@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="initApp()"
+  currentState="loggedOut">
+  <fx:Script source="chatRooms.as"/>
+  <fx:Declarations>
+    <s:TraceTarget/>
+  </fx:Declarations>
+  <s:states>
+    <s:State name="loggedOut"/>
+    <s:State name="loggedIn"/>
+  </s:states>
+  <s:controlBarContent>
+    <s:Label text="My Chat Rooms" fontSize="24"/>
+    <mx:Spacer width="100%"/>
+    <s:HGroup id="loginBox" includeIn="loggedOut" verticalAlign="middle">
+      <mx:Label text="User name:"/>
+      <mx:TextInput id="userInput" enter="login()" width="200"/>
+      <mx:Button label="Log In" click="login()"/>
+    </s:HGroup>
+    <s:HGroup includeIn="loggedIn" verticalAlign="middle">
+      <s:Label text="Room: {currentRoom==null?'None':currentRoom}"/>
+      <s:Label text="User: {user}"/>
+      <s:Button label="Log Out" click="logout()"/>
+    </s:HGroup>
+  </s:controlBarContent>
+  <mx:HDividedBox width="100%" height="100%">
+    <mx:VBox width="100%" height="100%">
+      <s:Panel height="100%" width="100%" title="Rooms">
+        <mx:List id="roomList" dataProvider="{acRooms}" 
+          width="100%" height="100%"/>
+        <s:controlBarContent>
+          <s:Button label="Change Room" click="changeChatRoom()"
+            enabled="{roomList.selectedIndex != -1}"/>
+        </s:controlBarContent>
+      </s:Panel>
+    </mx:VBox>
+    <s:Panel width="100%" height="100%" id="chatPanel" title="Chat">
+      <s:TextArea id="msgLog" width="100%"  height="100%"
+        editable="false"/>
+      <s:controlBarContent>
+        <s:TextInput id="msgInput" enter="send()" width="100%"/>
+        <s:Button label="Send" click="send()"/>
+        <s:Button label="Log Out" click="logout()"/>
+      </s:controlBarContent>
+    </s:Panel>
+  </mx:HDividedBox>
+</s:Application>

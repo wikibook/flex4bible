@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="app_CreationCompleteHandler()">
+  <fx:Declarations>
+    <mx:CurrencyFormatter id="cf" precision="2"/>
+    <mx:NumberFormatter id="nf" precision="1"/>
+    <mx:Producer id="myProducer" destination="dashboard"/>
+    <mx:Consumer id="myConsumer" destination="dashboard" 
+      message="messageHandler(event)"/>
+  </fx:Declarations>
+  <fx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import mx.events.CollectionEvent;
+      import mx.messaging.events.MessageEvent;
+      import mx.messaging.messages.AsyncMessage;
+      [Bindable]
+      private var acSales:ArrayCollection = new ArrayCollection(
+        [{name:"Popcorn", sales:65.00},
+          {name:"Soda", sales:78.00},
+          {name:"Candy", sales:32.00}]);
+      private function app_CreationCompleteHandler():void
+      {
+        myConsumer.subscribe();
+        acSales.addEventListener(CollectionEvent.COLLECTION_CHANGE, 
+          syncClients);
+      }
+      private function messageHandler(event:MessageEvent):void
+      {
+        acSales.removeEventListener(CollectionEvent.COLLECTION_CHANGE, 
+          syncClients);
+        acSales = event.message.body as ArrayCollection;
+        acSales.addEventListener(CollectionEvent.COLLECTION_CHANGE, 
+          syncClients);
+      }
+      private function syncClients(event:Event):void
+      {
+        var message:AsyncMessage = new AsyncMessage();
+        message.body = acSales;
+        myProducer.send(message);
+      }
+      private function formatLabel(data:Object, field:String, 
+        index:Number, percentValue:Number):String
+      {
+        return data.name + "\n" + 
+          cf.format(data.sales) + "\n(" +  
+          nf.format(percentValue) + "%)";
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" paddingBottom="20" 
+      horizontalAlign="center"/>
+  </s:layout>
+  <s:Label text="Concession Sales" fontWeight="bold" fontSize="14"/>
+  <mx:PieChart id="chart" dataProvider="{acSales}"
+    width="100%" height="100%">
+    <mx:series>
+      <mx:PieSeries field="sales" explodeRadius=".05"
+        labelPosition="callout" labelFunction="formatLabel"
+        fontSize="12" fontWeight="bold"/>
+    </mx:series>
+  </mx:PieChart>
+  <mx:DataGrid dataProvider="{acSales}" editable="true"  
+    rowCount="{acSales.length}">
+    <mx:columns>
+      <mx:DataGridColumn dataField="name" headerText="Product Name" 
+        editable="false"/>
+      <mx:DataGridColumn dataField="sales" headerText="Sales"/>
+    </mx:columns>
+  </mx:DataGrid>
+</s:Application>

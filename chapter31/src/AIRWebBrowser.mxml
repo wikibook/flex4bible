@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  width="900" height="600">
+  <fx:Script>
+    <![CDATA[
+      import mx.controls.Alert;
+      [Bindable]
+      private var myURL:String = "http://";
+      private function navigate():void
+      {
+        myURL = urlInput.text;
+        if (myURL.substr(0,4) != "http")
+        {
+          myURL = "http://" + myURL;
+        }
+        var fileExtension:String = myURL.substr(myURL.length-3, 3);
+        if (fileExtension.toLowerCase() == "pdf" &&
+          HTML.pdfCapability != HTMLPDFCapability.STATUS_OK)
+        {
+          Alert.show("This request requires Acrobat Reader 8.1 or later", 
+            "Acrobat Error");
+        }
+        else
+        {
+          myHTML.location = myURL;
+          status = myURL;
+        }
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" paddingLeft="10" paddingRight="10"/>
+  </s:layout>
+  <s:HGroup verticalAlign="middle">
+    <s:Label text="My AIR Web Browser" fontWeight="bold" fontSize="14"/>
+    <mx:Spacer width="25"/>
+    <s:Label text="New URL:" fontWeight="bold" fontSize="12"/>
+    <s:TextInput id="urlInput" width="450" text="{myURL}" enter="navigate()"/>
+    <s:Button label="Go" click="navigate()"/>
+  </s:HGroup>
+  <mx:HTML id="myHTML" width="100%" height="100%"/>
+</s:WindowedApplication>

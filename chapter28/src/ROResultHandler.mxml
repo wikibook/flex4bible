@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="app_creationCompleteHandler()">
+  <fx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import mx.rpc.events.ResultEvent;
+      import mx.rpc.remoting.RemoteObject;
+      [Bindable]
+      private var contactData:ArrayCollection;
+      private var contactService:RemoteObject;
+      private function app_creationCompleteHandler():void
+      {
+        contactService = new RemoteObject("ColdFusion");
+        contactService.source = "flex4bible.chapter28.ContactService";
+        contactService.addEventListener(ResultEvent.RESULT, resultHandler);
+      }
+      private function resultHandler(event:ResultEvent):void
+      {
+        contactData = event.result as ArrayCollection;
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" horizontalAlign="center"/>
+  </s:layout>   
+  <s:Button label="Hello World" click="contactService.getAllContacts()"/>
+  <mx:DataGrid dataProvider="{contactData}"/>
+</s:Application>

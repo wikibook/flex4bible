@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx"
+  creationComplete="app_creationCompleteHandler()">
+  <fx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import mx.controls.Alert;
+      import mx.rpc.events.FaultEvent;
+      import mx.rpc.events.ResultEvent;
+      import mx.rpc.remoting.RemoteObject;
+      
+      import valueObjects.ContactVO;
+      
+      [Bindable]
+      private var contactData:ArrayCollection = new ArrayCollection();
+      private var contactService:RemoteObject;
+      private var contactVO:ContactVO;
+      private function app_creationCompleteHandler():void
+      {
+        contactService = new RemoteObject("ColdFusion");
+        contactService.source = "flex4bible.chapter28.ContactService";
+        contactService.addEventListener(ResultEvent.RESULT, resultHandler);
+        contactService.addEventListener(FaultEvent.FAULT, faultHandler);
+      }
+      private function resultHandler(event:ResultEvent):void
+      {
+        contactData.source = event.result as Array;
+      }
+      private function faultHandler(event:FaultEvent):void
+      {
+        var errorMessage:String = event.fault.faultString;
+        errorMessage = errorMessage.substring(22, errorMessage.length); 
+        Alert.show(errorMessage, event.fault.faultCode);
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout paddingTop="20" horizontalAlign="center"/>
+  </s:layout>
+  <s:Button label="Get Contacts" 
+    click="contactService.getContactsAsArray()"/>
+  <mx:DataGrid dataProvider="{contactData}"/>
+</s:Application>

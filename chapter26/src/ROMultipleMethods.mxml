@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+  xmlns:s="library://ns.adobe.com/flex/spark" 
+  xmlns:mx="library://ns.adobe.com/flex/mx">
+  <fx:Declarations>
+    <s:RemoteObject id="roHello" destination="helloService"
+      result="arrayHandler(event)">
+      <s:method name="helloWorld" result="helloHandler(event)"/>
+      <s:method name="getArray" result="arrayHandler(event)"/>
+    </s:RemoteObject>  
+  </fx:Declarations>
+  <fx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import mx.rpc.events.ResultEvent;
+      
+      [Bindable]
+      private var statesData:ArrayCollection;
+      [Bindable]
+      private var helloString:String;
+      private function arrayHandler(event:ResultEvent):void
+      {
+        statesData = event.result as ArrayCollection;
+      }
+      private function helloHandler(event:ResultEvent):void
+      {
+        helloString = event.result as String;
+      }
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="center" paddingTop="20"/>
+  </s:layout>
+  <s:Button label="Get String" click="roHello.helloWorld()"/>
+  <s:Label text="{helloString}" fontSize="14"/>
+  <s:Button label="Get Array" click="roHello.getArray()"/>
+  <mx:DataGrid dataProvider="{statesData}"/>
+</s:Application>
